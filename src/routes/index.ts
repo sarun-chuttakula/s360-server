@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import AuthRouter from "./auth.router";
+import GroupRouter from "./group.router";
 import { catchAsync } from "../utils/error.util";
 const router = express.Router();
 router.get(
@@ -9,4 +10,5 @@ router.get(
   })
 );
 router.use("/auth", AuthRouter);
+router.use("/group", GroupRouter);
 export default router;

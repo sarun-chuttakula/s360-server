@@ -41,26 +41,27 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
   const tokenUuid = randomUUID();
   const refreshToken = generateToken(
     {
-      id: user.id,
+      id: newuser.id,
       uuid: tokenUuid,
     },
     "refresh"
   );
+  console.log(newuser.role, "user.role");
 
   const accessToken = generateToken({
-    id: user.id,
-    role: user.role,
+    id: newuser.id,
+    role: newuser.role,
     uuid: tokenUuid,
   });
 
   storeUserTokenInCache(
-    `${user.id}-accessToken-${tokenUuid}`,
+    `${newuser.id}-accessToken-${tokenUuid}`,
     accessToken,
     config.accessTokenExpiryTime
   );
 
   storeUserTokenInCache(
-    `${user.id}-refreshToken-${tokenUuid}`,
+    `${newuser.id}-refreshToken-${tokenUuid}`,
     refreshToken,
     config.refreshTokenExpiryTime
   );

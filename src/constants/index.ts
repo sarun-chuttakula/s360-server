@@ -17,6 +17,10 @@ export const RESPONSE_MESSAGE = {
   USER_DELETED: "User deleted successfully",
   USER_FETCHED: "User fetched successfully",
   USER_LIST_FETCHED: "User list fetched successfully",
+  GROUP_CREATED_SUCCESSFULLY: "Group created successfully",
+  GROUP_UPDATED: "Group updated successfully",
+  GROUP_DELETED: "Group deleted successfully",
+  GROUP_FETCHED: "Group fetched successfully",
 };
 export const TYPE_ORM_ERROR_CODE = {
   ER_DUP_ENTRY: "ER_DUP_ENTRY",

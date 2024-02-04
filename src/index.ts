@@ -13,7 +13,7 @@ import logger from "./utils/logger.util";
 import { Server } from "socket.io";
 import http, { request } from "http";
 // import { generateCreateTableScript } from "./utils/genSQL.util";
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 const app: Application = express();
 const server = http.createServer(app);
 const io = new Server(server, {
