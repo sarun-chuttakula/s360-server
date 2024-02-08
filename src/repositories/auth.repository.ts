@@ -38,6 +38,7 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
     username: lowercaseUsername,
     password: hashedPassword,
   });
+  console.log(newuser)
   const tokenUuid = randomUUID();
   const refreshToken = generateToken(
     {
