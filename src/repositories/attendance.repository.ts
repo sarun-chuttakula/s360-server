@@ -1,8 +1,7 @@
 import AppDataSource from "../configs/data-source";
-import { Attendance } from "../models/attendance.model";
-import { Student } from "../models/student.model";
-import { INewAttendanceRequest, INewAttendanceResponse } from "../dtos";
-import { User } from "../models";
+import { Attendance, User, Student } from "../models";
+import { INewAttendanceRequest, INewAttendanceResponse, IAttendanceUpdateRequest, IAttendanceUpdateResponse } from "../dtos";
+import { MoreThanOrEqual } from "typeorm";
 const attendanceRepository = AppDataSource.manager.getRepository(Attendance);
 const studentRepository = AppDataSource.manager.getRepository(Student);
 export const createAttendance = async (
@@ -21,6 +20,8 @@ export const createAttendance = async (
                 attendance: att.attendance,
                 created_by: reqUser.id,
                 updated_by: reqUser.id,
+                created_at: new Date(),
+                updated_at: new Date(),
                 student: findstudent,
             })
         }
@@ -44,102 +45,24 @@ export const createAttendance = async (
     //   return Newattendance;
 };
 
-// export const getAllattendances = async () => {
-//   const attendances = await attendanceRepository.find();
-//   return attendances;
-// };
-
-// export const getattendanceById = async (id: string) => {
-//   const attendance = await attendanceRepository.findOne({ where: { id: id } });
-//   return attendance;
-// };
-
-// export const updateattendance = async (id: string, payload: INewattendanceRequest) => {
-//   const attendance = await attendanceRepository.findOne({ where: { id: id } });
-//   if (!attendance) {
-//     return null;
-//   }
-//   const updatedattendance = await attendanceRepository.save({
-//     ...attendance,
-//     ...payload,
-//   });
-//   return updatedattendance;
-// };
-
-// export const deleteattendance = async (id: string) => {
-//   const attendance = await attendanceRepository.findOne({ where: { id: id } });
-//   if (!attendance) {
-//     return null;
-//   }
-//   const deletedattendance = await attendanceRepository.delete(id);
-//   return deletedattendance;
-// };
-
-// export const addMemberToattendance = async (
-//   attendanceId: string,
-//   userId: string,
-//   reqUser: User
-// ) => {
-//   const attendance = await attendanceRepository.findOne({ where: { id: attendanceId } });
-//   if (!attendance) {
-//     throw new Error("attendance not found");
-//   }
-//   const newUser = await userRepository.findOne({ where: { id: userId } });
-//   if (!newUser) throw new Error("User not found");
-//   const newattendanceMember = new attendanceMember();
-//   newattendanceMember.attendance = attendance;
-//   newattendanceMember.admin = reqUser;
-//   newattendanceMember.user = newUser;
-//   await attendanceMemberRepository.save(newattendanceMember);
-//   return newattendanceMember;
-// };
-
-// export const removeMemberFromattendance = async (
-//   attendanceId: string,
-//   userId: string
-// ) => {
-//   const attendance = await attendanceRepository.findOne({ where: { id: attendanceId } });
-//   if (!attendance) {
-//     throw new Error("attendance not found");
-//   }
-//   const user = await userRepository.findOne({ where: { id: userId } });
-//   if (!user) throw new Error("User not found");
-//   const attendanceMember = await attendanceMemberRepository.findOne({
-//     where: { attendance: attendance, user: user },
-//   });
-//   if (!attendanceMember) throw new Error("User not found in attendance");
-//   const deletedattendanceMember = await attendanceMemberRepository.delete(attendanceMember.id);
-//   return deletedattendanceMember;
-// };
-
-// export const getattendanceMembers = async (attendanceId: string) => {
-//   const attendance = await attendanceRepository.findOne({ where: { id: attendanceId } });
-//   if (!attendance) {
-//     throw new Error("attendance not found");
-//   }
-//   const attendanceMembers = await attendanceMemberRepository.find({
-//     where: { attendance: attendance },
-//   });
-//   return attendanceMembers;
-// };
-
-// export const updateRoleInattendance = async (
-//   attendanceId: string,
-//   userId: string,
-//   isadmin: boolean
-// ) => {
-//   const attendance = await attendanceRepository.findOne({ where: { id: attendanceId } });
-//   if (!attendance) {
-//     throw new Error("attendance not found");
-//   }
-//   const user = await userRepository.findOne({ where: { id: userId } });
-//   if (!user) throw new Error("User not found");
-//   const attendanceMember = await attendanceMemberRepository.findOne({
-//     where: { attendance: attendance, user: user },
-//   });
-//   if (!attendanceMember) throw new Error("User not found in attendance");
-//   if (isadmin) attendanceMember.admin = user;
-//   else attendanceMember.user = user;
-//   const updatedattendanceMember = await attendanceMemberRepository.save(attendanceMember);
-//   return updatedattendanceMember;
-// };
+export const updateAttendance = async (
+    payload: IAttendanceUpdateRequest[],
+    reqUser: User
+): Promise<IAttendanceUpdateResponse> => {
+    await Promise.all(payload.map(async (att) => {
+        const curr_date = new Date();
+        curr_date.setUTCHours(0, 0, 0, 0);
+        const preattendance = await attendanceRepository.findOne({
+            where: { student: { ht_no: att.ht_no }, created_at: MoreThanOrEqual(curr_date) }
+        });
+        if (preattendance != null) {
+            await attendanceRepository.save({
+                ...preattendance,
+                attendance: att.attendance,
+                updated_at: new Date(),
+                updated_by: reqUser.id,
+            });
+        }
+    }))
+    return { message: "updated" }
+}

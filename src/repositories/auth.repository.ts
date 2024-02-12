@@ -1,6 +1,6 @@
 import { IUserRegisterRequest, IUserRegisterResponse } from "../dtos";
 import AppDataSource from "../configs/data-source";
-import { User } from "../models/user.model";
+import { User } from "../models";
 import {
   AlreadyExistsError,
   NotFoundException,

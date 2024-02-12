@@ -1,7 +1,7 @@
 import { Body, Post, Route, Tags, Security, Get, Put, Path } from "tsoa";
-import * as groupRepository from "../repositories";
-
 import {
+  IResponseDto,
+  ApiResponse,
   INewGroupRequest,
   INewGroupResponse,
   newGroupResponseFields,
@@ -15,9 +15,8 @@ import {
   UnauthorizedException,
 } from "../utils/error.util";
 import logger from "../utils/logger.util";
-import { ApiResponse, IResponseDto } from "../dtos/response.dto";
 import mask from "../utils/mask.util";
-import { createGroup } from "../repositories/group.repository";
+import { createGroup } from "../repositories";
 
 @Route("group")
 @Tags("Group")

@@ -21,24 +21,9 @@ export interface INewAttendanceRequest {
   }
   
   export const AttendanceUpdateResponseFields = {
-    id: undefined,
-    title: undefined,
+    message: undefined,
   };
   
   export interface IAttendanceUpdateResponse {
-    id: string;
-    title: string;
+    message: string;
   }
-  
-  export interface IAttendanceDeleteRequest {
-    id: string;
-  }
-  
-  export const AttendanceDeleteResponseFields = {
-    id: undefined,
-  };
-  
-  export interface IAttendanceDeleteResponse {
-    id: string;
-  }
-  

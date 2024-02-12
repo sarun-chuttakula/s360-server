@@ -22,6 +22,8 @@ export const RESPONSE_MESSAGE = {
   GROUP_DELETED: "Group deleted successfully",
   GROUP_FETCHED: "Group fetched successfully",
   ATTENDANCE_CREATE: "Attendance marked successfully",
+  ATTENDANCE_UPDATE: "Attendance updated successfully",
+  FEEDETAILS_CREATE: "FeeDetails created successfully",
 };
 export const TYPE_ORM_ERROR_CODE = {
   ER_DUP_ENTRY: "ER_DUP_ENTRY",
