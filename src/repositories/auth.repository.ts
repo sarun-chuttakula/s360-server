@@ -16,10 +16,60 @@ import {
 import { ERROR_MESSAGE } from "../constants";
 import { randomUUID } from "crypto";
 import config from "../configs/auth.config";
+import { Student } from "../models";
 export const register = async (payload: IUserRegisterRequest): Promise<any> => {
   console.log(payload, "payload");
   const lowercaseUsername = payload.username.toLowerCase();
   const userRepository = AppDataSource.manager.getRepository(User);
+  const studentRepository = AppDataSource.manager.getRepository(Student);
+  if (payload.role === "student") {
+    const existingStudent = await studentRepository.findOne({
+      where: [{ email: payload.email }, { ht_no: lowercaseUsername }],
+    });
+    if (existingStudent) {
+      throw new AlreadyExistsError("Student already exists");
+    }
+    const hashedPassword = await generateHash(payload.password);
+    const newStudent = await studentRepository.save({
+      ...new Student(),
+      ...payload,
+      created_at: new Date(),
+      updated_at: new Date(),
+      created_by: "SELF",
+      updated_by: "SELF",
+      ht_no: lowercaseUsername,
+      password: hashedPassword,
+    });
+    const tokenUuid = randomUUID();
+    const refreshToken = generateToken(
+      {
+        id: newStudent.id,
+        uuid: tokenUuid,
+      },
+      "refresh"
+    );
+    const accessToken = generateToken({
+      id: newStudent.id,
+      role: newStudent.role,
+      uuid: tokenUuid,
+    });
+    storeUserTokenInCache(
+      `${newStudent.id}-accessToken-${tokenUuid}`,
+      accessToken,
+      config.accessTokenExpiryTime
+    );
+    storeUserTokenInCache(
+      `${newStudent.id}-refreshToken-${tokenUuid}`,
+      refreshToken,
+      config.refreshTokenExpiryTime
+    );
+    newStudent.password = "";
+    return {
+      ...newStudent,
+      accesstoken: accessToken,
+      refreshtoken: refreshToken,
+    };
+  }
   const existingUser = await userRepository.findOne({
     where: [{ email: payload.email }, { username: lowercaseUsername }],
   });

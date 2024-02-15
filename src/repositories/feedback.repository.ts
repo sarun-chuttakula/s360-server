@@ -15,6 +15,7 @@ export const createFeedback = async (
     ...new Feedback(),
     ...payload,
     created_by: reqUser.id,
+    updated_by: reqUser.id,
   });
   if (!newFeedback) throw new Error("Feedback not created");
   return newFeedback;

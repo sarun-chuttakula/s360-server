@@ -5,3 +5,4 @@ export * from "./redis.util";
 export * from "./logger.util";
 export * from "./mask.util";
 export * from "./error.util";
+export * from "./google_drive.utils";

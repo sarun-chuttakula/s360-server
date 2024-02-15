@@ -6,7 +6,7 @@ import {
 } from "../utils/error.util";
 import { Role } from "../enums";
 import { checkUserTokenInCache, verifyToken } from "../utils/auth.util";
-import { User } from "../models";
+import { Student, User } from "../models";
 import { Socket } from "socket.io";
 import AppDataSource from "../configs/data-source";
 
@@ -14,7 +14,7 @@ export const validateToken = async (
   tokenString?: string,
   roles?: string[],
   secretPass?: string
-): Promise<User | undefined> => {
+): Promise<User | Student | undefined> => {
   if (tokenString) {
     const token = tokenString.split(" ")[1];
 
@@ -58,6 +58,14 @@ export const validateToken = async (
         .findOne({ where: { id: tokenResult.payload.id } });
       if (user) return user;
     }
+    console.log("tokenResult.payload.role", tokenResult.payload.role);
+    console.log(tokenResult.payload.role == Role.student);
+    if (tokenResult.payload.role === Role.student) {
+      user = await AppDataSource.manager
+        .getRepository(Student)
+        .findOne({ where: { id: tokenResult.payload.id } });
+      if (user) return user;
+    }
 
     throw new UnauthorizedException();
   }
@@ -80,7 +88,7 @@ export const authorizeUser = (roles?: Role[], allowPublicReq = false) =>
         req.params.secretPass
       );
       if (user instanceof User) req.user = user;
-      // if (user instanceof Child) req.child = user;
+      if (user instanceof Student) req.student = user;
       next();
     }
   });

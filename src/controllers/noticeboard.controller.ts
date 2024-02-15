@@ -23,8 +23,8 @@ import {
   getAllNotices,
 } from "../repositories/noticeboard.repository";
 
-@Route("group")
-@Tags("Group")
+@Route("noticeboard")
+@Tags("Noticeboard")
 export default class NoticeboardController {
   constructor(private req: Request) {}
 

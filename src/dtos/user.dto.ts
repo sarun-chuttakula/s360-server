@@ -1,3 +1,5 @@
+import { Role } from "../enums";
+
 export interface IUserRegisterRequest {
   firstname: string;
   lastname: string;
@@ -8,6 +10,7 @@ export interface IUserRegisterRequest {
   email: string;
   phone: string;
   profile_pic: string;
+  role: Role;
 }
 
 export const UserRegisterResponseFields = {
