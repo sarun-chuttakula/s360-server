@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import AuthRouter from "./auth.router";
 import GroupRouter from "./group.router";
+import NoticeboardRouter from "./noticeboard.router";
 import { catchAsync } from "../utils/error.util";
 const router = express.Router();
 router.get(
@@ -11,4 +12,5 @@ router.get(
 );
 router.use("/auth", AuthRouter);
 router.use("/group", GroupRouter);
+router.use("/noticeboard", NoticeboardRouter);
 export default router;

@@ -10,6 +10,9 @@ export const ERROR_MESSAGE = {
   UNAUTHORIZED_ACCESS: "Unauthorized access",
   INVALID_CREDENTIALS: "Invalid credentials",
   ALREADY_EXISTS: "Already exists",
+  NOTICE_NOT_FOUND: "Notice not found",
+  GROUP_NOT_FOUND: "Group not found",
+  GROUP_ALREADY_EXIST: "Group already exist",
 };
 export const RESPONSE_MESSAGE = {
   USER_REGISTERED_SUCCESSFULLY: "User registered successfully",
@@ -21,6 +24,12 @@ export const RESPONSE_MESSAGE = {
   GROUP_UPDATED: "Group updated successfully",
   GROUP_DELETED: "Group deleted successfully",
   GROUP_FETCHED: "Group fetched successfully",
+  NOTICE_CREATED_SUCCESSFULLY: "Notice created successfully",
+  NOTICES_FETCHED_SUCCESSFULLY: "Notices fetched successfully",
+  NOTICE_FETCHED_SUCCESSFULLY: "Notice fetched successfully",
+  NOTICE_UPDATED_SUCCESSFULLY: "Notice updated successfully",
+
+  NOTICE_DELETED_SUCCESSFULLY: "Notice deleted successfully",
 };
 export const TYPE_ORM_ERROR_CODE = {
   ER_DUP_ENTRY: "ER_DUP_ENTRY",
