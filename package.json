@@ -39,6 +39,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "pdf-lib": "^1.17.1",
     "redis": "^4.6.12",
     "reflect-metadata": "^0.2.1",
     "socket.io": "^4.7.4",

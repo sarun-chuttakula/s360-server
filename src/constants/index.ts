@@ -34,6 +34,10 @@ export const RESPONSE_MESSAGE = {
   MESSAGE_SENT_SUCCESSFULLY: "Message sent successfully",
   MESSAGE_FETCHED_SUCCESSFULLY: "Message fetched successfully",
   MESSAGE_DELETED_SUCCESSFULLY: "Message deleted successfully",
+  ATTENDANCE_CREATE: "Attendance marked successfully",
+  ATTENDANCE_UPDATE: "Attendance updated successfully",
+  FEEDETAILS_CREATE: "FeeDetails created successfully",
+  FEEDETAILS_FETCHED: "FeeDetails fetched successfully",
 };
 export const TYPE_ORM_ERROR_CODE = {
   ER_DUP_ENTRY: "ER_DUP_ENTRY",

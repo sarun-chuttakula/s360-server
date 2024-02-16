@@ -6,3 +6,5 @@ export * from "./base.model";
 export * from "./student.model";
 export * from "./noticeboard.model";
 export * from "./feedback.model";
+export * from "./feedetails.model";
+export * from "./attendance.model";

@@ -11,7 +11,7 @@ const router = Router();
 router
   .route("/")
   .post(
-    authorizeUser([Role.teacher]),
+    authorizeUser([Role.teacher, Role.admin]),
     catchAsync(async (req: Request, res: Response) => {
       const noticeboardController = new NoticeboardController(req);
       const response = await noticeboardController.createNotice(req.body);

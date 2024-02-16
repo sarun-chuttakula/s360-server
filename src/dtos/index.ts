@@ -4,3 +4,6 @@ export * from "./group.dto";
 export * from "./feedback.dto";
 export * from "./noticeboard.dto";
 export * from "./message.dto";
+export * from "./attendance.dto";
+export * from "./feedetails.dto";
+export * from "./hallticket.dto";

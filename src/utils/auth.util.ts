@@ -17,6 +17,7 @@ export const generateToken = (
     exp: Math.floor(Date.now() / 1000) + expiryTime,
     type,
   };
+  console.log(data,type,secret,"dfbghmjngfbdvs")
   return jwt.sign(payload, secret);
 };
 

@@ -1,6 +1,6 @@
 import { IUserRegisterRequest, IUserRegisterResponse } from "../dtos";
 import AppDataSource from "../configs/data-source";
-import { User } from "../models/user.model";
+import { User } from "../models";
 import {
   AlreadyExistsError,
   NotFoundException,
@@ -17,6 +17,7 @@ import { ERROR_MESSAGE } from "../constants";
 import { randomUUID } from "crypto";
 import config from "../configs/auth.config";
 import { Student } from "../models";
+import { Role } from "../enums";
 export const register = async (payload: IUserRegisterRequest): Promise<any> => {
   console.log(payload, "payload");
   const lowercaseUsername = payload.username.toLowerCase();
@@ -88,6 +89,7 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
     username: lowercaseUsername,
     password: hashedPassword,
   });
+  console.log(newuser);
   const tokenUuid = randomUUID();
   const refreshToken = generateToken(
     {
@@ -131,6 +133,52 @@ export const login = async (payload: IUserRegisterRequest): Promise<any> => {
   }
   if (payload.username) {
     whereConditions.push({ username: payload.username });
+  }
+  const studentRepository = AppDataSource.manager.getRepository(Student);
+
+  const lowercaseUsername = payload.username.toLowerCase();
+
+  const existingStudent = await studentRepository.findOne({
+    where: {
+      ht_no: lowercaseUsername,
+    },
+  });
+  if (existingStudent) {
+    if (!(await compareHash(payload.password, existingStudent.password))) {
+      throw new UnauthorizedException(ERROR_MESSAGE.INVALID_CREDENTIALS);
+    }
+    const tokenUuid = randomUUID();
+    const refreshToken = generateToken(
+      {
+        id: existingStudent.id,
+        uuid: tokenUuid,
+      },
+      "refresh"
+    );
+
+    const accessToken = generateToken({
+      id: existingStudent.id,
+      role: Role.student,
+      uuid: tokenUuid,
+    });
+
+    storeUserTokenInCache(
+      `${existingStudent.id}-accessToken-${tokenUuid}`,
+      accessToken,
+      config.accessTokenExpiryTime
+    );
+
+    storeUserTokenInCache(
+      `${existingStudent.id}-refreshToken-${tokenUuid}`,
+      refreshToken,
+      config.refreshTokenExpiryTime
+    );
+    existingStudent.password = "";
+    return {
+      ...existingStudent,
+      accesstoken: accessToken,
+      refreshtoken: refreshToken,
+    };
   }
   const user = await userRepository.findOne({
     where: whereConditions,
