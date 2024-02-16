@@ -28,7 +28,8 @@ router.route("/").get(
   catchAsync(async (req: Request, res: Response) => {
     const messageController = new MessageController(req);
     const response = await messageController.getMessagesByGroup(
-      req.query.groupId as string
+      req.query.groupId as string,
+      req.query.page as string
     );
     res.status(httpStatus.OK).json(response);
   })

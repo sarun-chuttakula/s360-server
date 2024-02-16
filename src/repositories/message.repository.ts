@@ -44,10 +44,18 @@ export const deleteMessage = async (id: string) => {
   return deletedMessage;
 };
 
-export const getMessagesByGroup = async (groupId: string) => {
+export const getMessagesByGroup = async (groupId: string, page: string) => {
+  const additionalParams: any = {};
+  if (page) {
+    let pageSize = 200;
+    const offset = pageSize * parseInt(page) - pageSize;
+    additionalParams["take"] = pageSize;
+    additionalParams["skip"] = offset;
+  }
   const group = await groupRepository.findOne({ where: { id: groupId } });
   if (!group) throw new Error("Group not found");
   const messages = await messageRepository.find({
+    ...additionalParams,
     where: {
       group: group,
     },
@@ -55,7 +63,8 @@ export const getMessagesByGroup = async (groupId: string) => {
       created_at: "DESC",
     },
   });
-  return messages;
+  const reversedMessages = messages.reverse();
+  return reversedMessages;
 };
 
 export const getMessagesBySender = async (sender: string) => {

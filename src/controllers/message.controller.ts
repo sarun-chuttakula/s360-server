@@ -64,10 +64,14 @@ export default class MessageController {
 
   @Get("/")
   public async getMessagesByGroup(
-    @Query() groupId: string
+    @Query() groupId: string,
+    @Query() page: string
   ): Promise<IResponseDto<ISendMessageResponse>> {
     try {
-      const messages = await messageRepository.getMessagesByGroup(groupId);
+      const messages = await messageRepository.getMessagesByGroup(
+        groupId,
+        page
+      );
       return new ApiResponse(
         true,
         mask(messages, SendMessageResponseFields),
