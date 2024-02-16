@@ -4,6 +4,7 @@ import GroupRouter from "./group.router";
 import NoticeboardRouter from "./noticeboard.router";
 import FeedbackRouter from "./feedback.router";
 import LibraryRouter from "./library.router";
+import MessageRouter from "./message.router";
 import { catchAsync } from "../utils/error.util";
 const router = express.Router();
 router.get(
@@ -17,4 +18,5 @@ router.use("/group", GroupRouter);
 router.use("/noticeboard", NoticeboardRouter);
 router.use("/feedback", FeedbackRouter);
 router.use("/library", LibraryRouter);
+router.use("/message", MessageRouter);
 export default router;

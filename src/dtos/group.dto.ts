@@ -9,6 +9,7 @@ export const newGroupResponseFields = {
   name: undefined,
   description: undefined,
   admin_id: undefined,
+  image: undefined,
 };
 
 export interface INewGroupResponse {
@@ -16,6 +17,7 @@ export interface INewGroupResponse {
   name: string;
   description: string;
   admin_id: string;
+  image: string;
 }
 
 export interface IGroupUpdateRequest {

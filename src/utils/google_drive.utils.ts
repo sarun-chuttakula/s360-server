@@ -17,9 +17,27 @@ const auth = new google.auth.JWT(
 const drive = google.drive({ version: "v3", auth });
 
 // Function to list all files and folders recursively in a Google Drive folder
-export const listFilesRecursively = (folderId: string, depth: number = 0) => {
-  // Print indentation based on depth
+// Define a type for fileInfo to handle both files and folders
+type FileInfo = {
+  name: string;
+  id: string;
+  mimeType: string;
+  contents?: FileInfo[]; // Optional property for folders
+};
+
+// Function to list all files and folders recursively in a Google Drive folder
+export const listFilesRecursively = (
+  folderId: string,
+  depth: number = 2,
+  callback: (directoryStructure: FileInfo) => void
+) => {
   const indent = "  ".repeat(depth);
+  const directoryStructure: FileInfo = {
+    name: "",
+    id: folderId,
+    mimeType: "",
+    contents: [],
+  };
 
   // List files in the current folder
   drive.files.list(
@@ -30,25 +48,36 @@ export const listFilesRecursively = (folderId: string, depth: number = 0) => {
     (err: any, res: any) => {
       if (err) {
         console.error(err);
+        callback(directoryStructure); // Return empty directory structure in case of error
         return;
       }
 
       const files = res.data.files;
+
       if (files && files.length > 0) {
-        // Log files in the current folder
-        console.log(`${indent}Files in folder ${folderId}:`);
         files.forEach((file: any) => {
-          console.log(
-            `${indent}- ${file.name} (ID: ${file.id}, Type: ${file.mimeType})`
-          );
+          const fileInfo: FileInfo = {
+            name: file.name,
+            id: file.id,
+            mimeType: file.mimeType,
+          };
+
           if (file.mimeType === "application/vnd.google-apps.folder") {
             // Recursively list files in subfolders
-            listFilesRecursively(file.id, depth + 1);
+            listFilesRecursively(
+              file.id,
+              depth + 1,
+              (subfolderStructure: FileInfo) => {
+                fileInfo.contents = subfolderStructure.contents; // Attach subfolder structure
+              }
+            );
           }
+
+          directoryStructure!.contents!.push(fileInfo); // Add file/folder info to directory structure
         });
-      } else {
-        console.log(`${indent}No files found in the folder ${folderId}.`);
       }
+
+      callback(directoryStructure); // Return the directory structure
     }
   );
 };
@@ -228,7 +257,9 @@ const folderId = "1n8JLji3zjDBMHpdn6rt2RaaCqh3AGPZq";
 // listFilesInFolder("1n8JLji3zjDBMHpdn6rt2RaaCqh3AGPZq");
 
 // Call the function to list files and folders recursively in a folder
-// listFilesRecursively("1n8JLji3zjDBMHpdn6rt2RaaCqh3AGPZq");
+// listFilesRecursively("1o1LfscjBoDzMfRGfK51HSAMcHy8M9mBH");
 
 //call to download the file from google drive
 // downloadFileFromDrive("1n8JLji3zjDBMHpdn6rt2RaaCqh3AGPZq");
+
+//check s360-893@s360-413312.iam.gserviceaccount.com this email to the folder shared

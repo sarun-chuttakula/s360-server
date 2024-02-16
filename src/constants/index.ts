@@ -21,6 +21,7 @@ export const RESPONSE_MESSAGE = {
   USER_FETCHED: "User fetched successfully",
   USER_LIST_FETCHED: "User list fetched successfully",
   GROUP_CREATED_SUCCESSFULLY: "Group created successfully",
+  GROUP_FETCHED_SUCCESSFULLY: "Group fetched successfully",
   GROUP_UPDATED: "Group updated successfully",
   GROUP_DELETED: "Group deleted successfully",
   GROUP_FETCHED: "Group fetched successfully",
@@ -30,6 +31,9 @@ export const RESPONSE_MESSAGE = {
   NOTICE_UPDATED_SUCCESSFULLY: "Notice updated successfully",
 
   NOTICE_DELETED_SUCCESSFULLY: "Notice deleted successfully",
+  MESSAGE_SENT_SUCCESSFULLY: "Message sent successfully",
+  MESSAGE_FETCHED_SUCCESSFULLY: "Message fetched successfully",
+  MESSAGE_DELETED_SUCCESSFULLY: "Message deleted successfully",
 };
 export const TYPE_ORM_ERROR_CODE = {
   ER_DUP_ENTRY: "ER_DUP_ENTRY",

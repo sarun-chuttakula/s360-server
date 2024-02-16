@@ -9,13 +9,10 @@ const router = Router();
 router.get(
   "/getdirectories",
   catchAsync(async (req: Request, res: Response) => {
-    const response = await listFilesRecursively(
-      "1o1LfscjBoDzMfRGfK51HSAMcHy8M9mBH"
-      // (data) => {
-      //   res.json(data); // Send the data as JSON to the client
-      // }
-    );
-    // res.send(response);
+    const folderId = "1xah2mM6Hr4_r1ePzpJLurG-AeLAVp8oR"; // The ID of the folder you want to fetch structure for
+    listFilesRecursively(folderId, 2, (directoryStructure) => {
+      res.json(directoryStructure);
+    });
   })
 );
 

@@ -17,7 +17,7 @@ import {
 import logger from "../utils/logger.util";
 import { ApiResponse, IResponseDto } from "../dtos/response.dto";
 import mask from "../utils/mask.util";
-import { createGroup } from "../repositories/group.repository";
+import { createGroup, getAllGroups } from "../repositories/group.repository";
 
 @Route("group")
 @Tags("Group")
@@ -44,6 +44,21 @@ export default class GroupController {
       } else {
         throw new ServerErrorException(error.message);
       }
+    }
+  }
+
+  @Get("/")
+  public async getAllGroups(): Promise<IResponseDto<INewGroupResponse>> {
+    try {
+      const groups = await getAllGroups();
+      return new ApiResponse(
+        true,
+        mask(groups, newGroupResponseFields),
+        RESPONSE_MESSAGE.GROUP_FETCHED_SUCCESSFULLY
+      );
+    } catch (error: any) {
+      logger.error(error);
+      throw new ServerErrorException(error.message);
     }
   }
 }
