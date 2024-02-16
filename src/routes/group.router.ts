@@ -18,7 +18,7 @@ router
     })
   )
   .get(
-    authorizeUser([Role.teacher]),
+    authorizeUser([Role.teacher, Role.student]),
     catchAsync(async (req: Request, res: Response) => {
       const groupController = new GroupController(req);
       const response = await groupController.getAllGroups();
