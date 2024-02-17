@@ -27,12 +27,16 @@ export const createGroup = async (
 };
 
 export const getAllGroups = async () => {
-  const groups = await groupRepository.find();
+  const groups = await groupRepository.find({
+    where: { is_active: true, is_deleted: false },
+  });
   return groups;
 };
 
 export const getGroupById = async (id: string) => {
-  const group = await groupRepository.findOne({ where: { id: id } });
+  const group = await groupRepository.findOne({
+    where: { id: id, is_active: true, is_deleted: false },
+  });
   return group;
 };
 
@@ -48,12 +52,18 @@ export const updateGroup = async (id: string, payload: INewGroupRequest) => {
   return updatedGroup;
 };
 
-export const deleteGroup = async (id: string) => {
+export const deleteGroup = async (id: string, reqUser: User) => {
   const group = await groupRepository.findOne({ where: { id: id } });
   if (!group) {
     return null;
   }
-  const deletedGroup = await groupRepository.delete(id);
+  //soft delete
+  group.is_active = false;
+  group.is_deleted = true;
+  group.updated_by = reqUser.id;
+  const deletedGroup = await groupRepository.save(group);
+  //direct delete
+  // const deletedGroup = await groupRepository.delete(id);
   return deletedGroup;
 };
 

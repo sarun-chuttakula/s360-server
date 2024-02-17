@@ -4,13 +4,23 @@ import { Student } from "./student.model";
 @Entity("feedetails")
 @Check(`"is_deleted" = false`)
 export class FeeDetails extends BaseEntityModel {
-  @Column()
-  amount!:number
+  @Column({ name: "amount" })
+  amount!: number;
 
-  @Column()
-  t_id!:string
+  @Column({ name: "transaction_id" })
+  transaction_id!: string;
+
+  @Column({
+    name: "payment_date",
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  payment_date!: Date;
+
+  @Column({ name: "is_paid" })
+  is_paid!: boolean;
 
   @ManyToOne(() => Student, (student) => student.id)
-  @JoinColumn({ name: 'student_id' })
-  student!: Student
+  @JoinColumn({ name: "student_id" })
+  student!: Student;
 }

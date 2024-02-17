@@ -25,6 +25,16 @@ router
       const response = await noticeboardController.getAllNotices();
       res.status(httpStatus.OK).json(response);
     })
+  )
+  .delete(
+    authorizeUser([Role.teacher, Role.admin]),
+    catchAsync(async (req: Request, res: Response) => {
+      const noticeboardController = new NoticeboardController(req);
+      const response = await noticeboardController.deleteNotice(
+        req.query.noticeId as string
+      );
+      res.status(httpStatus.OK).json(response);
+    })
   );
 
 export default router;

@@ -24,6 +24,7 @@ export const RESPONSE_MESSAGE = {
   GROUP_FETCHED_SUCCESSFULLY: "Group fetched successfully",
   GROUP_UPDATED: "Group updated successfully",
   GROUP_DELETED: "Group deleted successfully",
+  GROUP_DELETED_SUCCESSFULLY: "Group deleted successfully",
   GROUP_FETCHED: "Group fetched successfully",
   NOTICE_CREATED_SUCCESSFULLY: "Notice created successfully",
   NOTICES_FETCHED_SUCCESSFULLY: "Notices fetched successfully",

@@ -1,4 +1,15 @@
-import { Body, Post, Route, Tags, Security, Get, Put, Path } from "tsoa";
+import {
+  Body,
+  Post,
+  Route,
+  Tags,
+  Security,
+  Get,
+  Put,
+  Path,
+  Delete,
+  Query,
+} from "tsoa";
 import * as noticeboard from "../repositories";
 
 import {
@@ -132,4 +143,26 @@ export default class NoticeboardController {
   //     throw new ServerErrorException(error.message);
   //   }
   // }
+
+  @Delete("/")
+  public async deleteNotice(
+    @Query() noticeId: string
+  ): Promise<IResponseDto<INewNoticeboardResponse>> {
+    try {
+      if (!this.req.user)
+        throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
+      const notice = await noticeboard.deleteNotice(noticeId, this.req.user);
+      if (!notice) {
+        throw new NotFoundException(ERROR_MESSAGE.NOTICE_NOT_FOUND);
+      }
+      return new ApiResponse(
+        true,
+        mask(notice, newNoticeboardResponseFields),
+        RESPONSE_MESSAGE.NOTICE_DELETED_SUCCESSFULLY
+      );
+    } catch (error: any) {
+      logger.error(error);
+      throw new ServerErrorException(error.message);
+    }
+  }
 }

@@ -19,7 +19,9 @@ export const createNotice = async (
 
 export const getAllNotices = async () => {
   const noticeRepository = AppDataSource.getRepository(Noticeboard);
-  const notices = await noticeRepository.find();
+  const notices = await noticeRepository.find({
+    where: { is_active: true, is_deleted: false },
+  });
   return notices;
 };
 
@@ -53,6 +55,9 @@ export const deleteNotice = async (id: string, reqUser: User) => {
   if (!notice) {
     return null;
   }
-  const deletedNotice = await noticeRepository.delete(id);
-  return deletedNotice;
+  notice.is_deleted = true;
+  notice.is_active = false;
+  notice.updated_by = reqUser.id;
+  // const deletedNotice = await noticeRepository.delete(id);
+  return noticeRepository.save(notice);
 };
