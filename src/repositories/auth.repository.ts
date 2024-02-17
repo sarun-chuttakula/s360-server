@@ -158,7 +158,7 @@ export const login = async (payload: IUserRegisterRequest): Promise<any> => {
 
     const accessToken = generateToken({
       id: existingStudent.id,
-      role: Role.student,
+      role: existingStudent.role,
       uuid: tokenUuid,
     });
 

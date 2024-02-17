@@ -22,6 +22,9 @@ export class Student extends BaseUser {
   @Column({ nullable: false })
   password!: string;
 
+  @Column({ nullable: false, default: Role.student })
+  role!: Role;
+
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   lastlogin!: Date;
 
