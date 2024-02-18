@@ -1,6 +1,15 @@
-import { Entity, Column, OneToMany, Check } from "typeorm";
+import {
+  Entity,
+  Column,
+  OneToMany,
+  Check,
+  JoinColumn,
+  ManyToOne,
+} from "typeorm";
 import { Role } from "../enums";
 import { BaseUser } from "./base-user.model";
+import { Classes } from "./class.model";
+import { classes } from "http-status";
 @Entity("student")
 @Check(`"is_deleted" = false`)
 export class Student extends BaseUser {
@@ -30,4 +39,8 @@ export class Student extends BaseUser {
 
   @Column({ nullable: true, default: null })
   profile_pic!: string;
+
+  @ManyToOne(() => Classes, (classes) => classes.id, { nullable: false })
+  @JoinColumn({ name: "class" })
+  class!: Classes;
 }

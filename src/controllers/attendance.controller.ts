@@ -1,4 +1,4 @@
-import { Body, Get, Post, Put, Route, Tags } from "tsoa";
+import { Body, Get, Post, Put, Query, Route, Tags } from "tsoa";
 import { RESPONSE_MESSAGE, ERROR_MESSAGE } from "../constants";
 import e, { Request } from "express";
 import {
@@ -17,6 +17,7 @@ import {
   newAttendanceResponseFields,
 } from "../dtos";
 import {
+  attendanceGraph,
   createAttendance,
   getAllStudents,
   updateAttendance,
@@ -87,6 +88,37 @@ export default class AttendanceController {
       return new ApiResponse(
         true,
         mask(attendance, getAllStudentsResponseFields),
+        RESPONSE_MESSAGE.STUDENT_FETCHED
+      );
+    } catch (error: any) {
+      logger.error(error);
+      if (error.statusCode === 409) {
+        throw new AlreadyExistsError(error.message);
+      } else {
+        throw new ServerErrorException(error.message);
+      }
+    }
+  }
+
+  @Get("/")
+  public async attendanceGraph(
+    @Query() studentId: string,
+    @Query() aggregator: string,
+    @Query() startDate: string,
+    @Query() endDate?: string
+  ): Promise<any> {
+    try {
+      if (!this.req.user)
+        throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
+      const attendance = await attendanceGraph(
+        studentId,
+        aggregator,
+        startDate,
+        endDate
+      );
+      return new ApiResponse(
+        true,
+        attendance,
         RESPONSE_MESSAGE.STUDENT_FETCHED
       );
     } catch (error: any) {

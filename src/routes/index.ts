@@ -8,6 +8,7 @@ import MessageRouter from "./message.router";
 import AttendanceRouter from "./attendance.router";
 import FeeDetails from "./feedetails.route";
 import HallTicket from "./hallticket.router";
+import ClassRouter from "./classes.router";
 import { catchAsync } from "../utils/error.util";
 const router = express.Router();
 router.get(
@@ -22,6 +23,7 @@ router.use("/noticeboard", NoticeboardRouter);
 router.use("/feedback", FeedbackRouter);
 router.use("/library", LibraryRouter);
 router.use("/message", MessageRouter);
+router.use("/class", ClassRouter);
 router.use("/attendance", AttendanceRouter);
 router.use("/finance", FeeDetails);
 router.use("/hallticket", HallTicket);

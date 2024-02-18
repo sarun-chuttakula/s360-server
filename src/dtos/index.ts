@@ -7,3 +7,4 @@ export * from "./message.dto";
 export * from "./attendance.dto";
 export * from "./feedetails.dto";
 export * from "./hallticket.dto";
+export * from "./classes.dto";

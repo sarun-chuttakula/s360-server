@@ -11,6 +11,7 @@ export interface IUserRegisterRequest {
   phone: string;
   profile_pic: string;
   role: Role;
+  class?: string;
 }
 
 export const UserRegisterResponseFields = {

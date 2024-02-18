@@ -33,4 +33,17 @@ router.route("/students").get(
   })
 );
 
+router.route("/").get(
+  authorizeUser([Role.teacher]),
+  catchAsync(async (req: Request, res: Response) => {
+    const attendanceController = new AttendanceController(req);
+    const response = await attendanceController.attendanceGraph(
+      req.query.studentId as string,
+      req.query.aggregator as string,
+      req.query.startDate as string,
+      req.query.endDate as string
+    );
+    res.status(httpStatus.OK).json(response);
+  })
+);
 export default router;

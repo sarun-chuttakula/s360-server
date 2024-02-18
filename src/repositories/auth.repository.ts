@@ -18,6 +18,8 @@ import { randomUUID } from "crypto";
 import config from "../configs/auth.config";
 import { Student } from "../models";
 import { Role } from "../enums";
+import { Classes } from "../models/class.model";
+const classRepository = AppDataSource.manager.getRepository(Classes);
 export const register = async (payload: IUserRegisterRequest): Promise<any> => {
   console.log(payload, "payload");
   const lowercaseUsername = payload.username.toLowerCase();
@@ -31,6 +33,10 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
       throw new AlreadyExistsError("Student already exists");
     }
     const hashedPassword = await generateHash(payload.password);
+    const myclass = await classRepository.findOne({
+      where: { name: payload.class },
+    });
+    if (!myclass) throw new NotFoundException("Class not found");
     const newStudent = await studentRepository.save({
       ...new Student(),
       ...payload,
@@ -40,6 +46,7 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
       updated_by: "SELF",
       ht_no: lowercaseUsername,
       password: hashedPassword,
+      class: myclass,
     });
     const tokenUuid = randomUUID();
     const refreshToken = generateToken(
