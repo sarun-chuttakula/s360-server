@@ -15,6 +15,7 @@ export const ERROR_MESSAGE = {
   GROUP_ALREADY_EXIST: "Group already exist",
 };
 export const RESPONSE_MESSAGE = {
+  STUDENT_FETCHED: "Student fetched successfully",
   USER_REGISTERED_SUCCESSFULLY: "User registered successfully",
   USER_UPDATED: "User updated successfully",
   USER_DELETED: "User deleted successfully",

@@ -24,4 +24,13 @@ router.route("/update").put(
   })
 );
 
+router.route("/students").get(
+  authorizeUser([Role.teacher]),
+  catchAsync(async (req: Request, res: Response) => {
+    const attendanceController = new AttendanceController(req);
+    const response = await attendanceController.getAllStudents();
+    res.status(httpStatus.OK).json(response);
+  })
+);
+
 export default router;

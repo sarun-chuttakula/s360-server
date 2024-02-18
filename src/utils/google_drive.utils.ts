@@ -263,3 +263,97 @@ const folderId = "1n8JLji3zjDBMHpdn6rt2RaaCqh3AGPZq";
 // downloadFileFromDrive("1n8JLji3zjDBMHpdn6rt2RaaCqh3AGPZq");
 
 //check s360-893@s360-413312.iam.gserviceaccount.com this email to the folder shared
+
+// Define an interface for folder and file
+interface DriveItem {
+  name: string;
+  id: string;
+  mimeType: string;
+  contents?: DriveItem[];
+}
+
+// Function to fetch the complete folder structure recursively in tree-like structure
+export const fetchFolderStructure = (folderId: string): Promise<DriveItem> => {
+  return new Promise((resolve, reject) => {
+    // Internal recursive function to build the folder structure
+    const buildFolderTree = (parentId: string): Promise<DriveItem> => {
+      return new Promise((resolve, reject) => {
+        listFilesInFolder(parentId, (data) => {
+          if (data.error) {
+            reject(data.error);
+            return;
+          }
+
+          const files = data.files;
+          const folderPromises: Promise<DriveItem>[] = [];
+
+          // Check if there are any files in the folder
+          if (!files || files.length === 0) {
+            resolve({
+              name: "",
+              id: parentId,
+              mimeType: "",
+              contents: [], // Empty contents array for folders without files
+            });
+            return;
+          }
+
+          // Iterate through files and folders
+          files.forEach((file: any) => {
+            const item: DriveItem = {
+              name: file.name,
+              id: file.id,
+              mimeType: file.mimeType,
+            };
+
+            if (file.mimeType === "application/vnd.google-apps.folder") {
+              // Recursively build the tree for subfolders
+              folderPromises.push(
+                buildFolderTree(file.id).then((subfolderStructure) => {
+                  item.contents = subfolderStructure.contents;
+                  return item;
+                })
+              );
+            } else {
+              folderPromises.push(Promise.resolve(item));
+            }
+          });
+
+          // Resolve all promises for subfolders
+          Promise.all(folderPromises)
+            .then((folderItems) => {
+              resolve({
+                name: "",
+                id: parentId,
+                mimeType: "",
+                contents: folderItems,
+              });
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
+      });
+    };
+
+    // Start building the folder tree
+    buildFolderTree(folderId)
+      .then((folderStructure) => {
+        resolve(folderStructure);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+// Example usage to fetch folder structure
+const folderIdToFetch = "1o1LfscjBoDzMfRGfK51HSAMcHy8M9mBH"; // Replace with the ID of the folder you want to fetch
+// fetchFolderStructure(folderIdToFetch)
+//   .then((folderStructure: DriveItem) => {
+//     console.log("Folder Structure:", folderStructure);
+//     // Now you can use the folder structure as needed in your backend
+//   })
+//   .catch((error) => {
+//     console.error("Error fetching folder structure:", error);
+//   });

@@ -47,19 +47,24 @@ export default class FeeDetailsController {
 
   @Get("/")
   public async getFeeDetails(
-    @Query() id: string
+    @Query() id?: string
   ): Promise<IResponseDto<INewFeeDetailsResponse>> {
     try {
-      if (!this.req.user)
+      if (!(this.req.user || this.req.student))
         throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
-      const FeeDetails = await getFeeDetails(id);
+      const user = this.req.user || this.req.student;
+      if (!user)
+        throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
+      const feeDetails = await getFeeDetails(user, id);
+
       return new ApiResponse(
         true,
-        mask(FeeDetails, newFeeDetailsResponseFields),
+        mask(feeDetails, newFeeDetailsResponseFields),
         RESPONSE_MESSAGE.FEEDETAILS_FETCHED
       );
     } catch (error: any) {
       logger.error(error);
+
       if (error.statusCode === 409) {
         throw new AlreadyExistsError(error.message);
       } else {

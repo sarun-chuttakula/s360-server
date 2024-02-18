@@ -1,6 +1,11 @@
 import { Router, Response, Request } from "express";
 import { authorizeUser } from "../middlewares";
-import { catchAsync, listFilesInFolder, listFilesRecursively } from "../utils";
+import {
+  catchAsync,
+  fetchFolderStructure,
+  listFilesInFolder,
+  listFilesRecursively,
+} from "../utils";
 import httpStatus from "http-status";
 import { Role } from "../enums";
 const router = Router();
@@ -15,6 +20,16 @@ router.get(
     });
   })
 );
+
+router.get("/getstructure/", async (req: Request, res: Response) => {
+  try {
+    const folderId = "1xah2mM6Hr4_r1ePzpJLurG-AeLAVp8oR";
+    const folderStructure = await fetchFolderStructure(folderId);
+    res.json(folderStructure);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 // Define other routes for Google Drive functions as needed
 
