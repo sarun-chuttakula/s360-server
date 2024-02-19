@@ -5,6 +5,7 @@ export interface INewFeeDetailsRequest {
 }
 
 export const newFeeDetailsResponseFields = {
+  ht_no: undefined,
   amount: undefined,
   transaction_id: undefined, //missingstudents
   is_paid: undefined,
@@ -12,6 +13,7 @@ export const newFeeDetailsResponseFields = {
 };
 
 export interface INewFeeDetailsResponse {
+  ht_no: string;
   message: string;
   amount: number;
   transaction_id: string;

@@ -22,6 +22,7 @@ export const createFeeDetails = async (
 };
 
 export const getFeeDetails = async (reqUser: User | Student, id?: string) => {
+  let students: any = [];
   if (id) {
     const student = await studentRepository.findOne({
       where: { ht_no: id },
@@ -33,25 +34,43 @@ export const getFeeDetails = async (reqUser: User | Student, id?: string) => {
     });
     if (!feedetails) throw new Error("feedetails not found");
     feedetails.forEach((feedetail) => {
+      feedetail.student.ht_no = student.ht_no;
       feedetail.student = feedetail.student;
       feedetail.amount = feedetail.amount;
       feedetail.transaction_id = feedetail.transaction_id;
       feedetail.is_paid = feedetail.is_paid;
       feedetail.payment_date = feedetail.payment_date;
+      students.push({
+        ht_no: feedetail.student.ht_no,
+        amount: feedetail.amount,
+        transaction_id: feedetail.transaction_id,
+        is_paid: feedetail.is_paid,
+        payment_date: feedetail.payment_date,
+      });
     });
-    return feedetails;
+    return students;
   } else {
     const feedetails = await feeDetailsRepository.find({
       where: { is_active: true, is_deleted: false },
+      relations: ["student"],
     });
     if (!feedetails) throw new Error("feedetails not found");
+
     feedetails.forEach((feedetail) => {
+      feedetail.student.ht_no = feedetail.student.ht_no;
       feedetail.student = feedetail.student;
       feedetail.amount = feedetail.amount;
       feedetail.transaction_id = feedetail.transaction_id;
       feedetail.is_paid = feedetail.is_paid;
       feedetail.payment_date = feedetail.payment_date;
+      students.push({
+        ht_no: feedetail.student.ht_no,
+        amount: feedetail.amount,
+        transaction_id: feedetail.transaction_id,
+        is_paid: feedetail.is_paid,
+        payment_date: feedetail.payment_date,
+      });
     });
-    return feedetails;
+    return students;
   }
 };

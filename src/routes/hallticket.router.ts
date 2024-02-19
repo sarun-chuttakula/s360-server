@@ -14,5 +14,16 @@ router.route("/").get(
     res.status(httpStatus.CREATED).json(response);
   })
 );
+router.route("/result").get(
+  authorizeUser([Role.student, Role.admin,Role.teacher]),
+  catchAsync(async (req: Request, res: Response) => {
+    const hallticket = new HallTicketController(req);
+    const response = await hallticket.getResultbyHallticket(
+      req.query.semester as string,
+      req.query.ht_no as string,
+    );
+    res.status(httpStatus.CREATED).json(response);
+  })
+);
 
 export default router;

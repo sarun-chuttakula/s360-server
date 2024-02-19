@@ -56,7 +56,7 @@ export default class FeeDetailsController {
       if (!user)
         throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
       const feeDetails = await getFeeDetails(user, id);
-
+      console.log(feeDetails, "feeDetails");
       return new ApiResponse(
         true,
         mask(feeDetails, newFeeDetailsResponseFields),
