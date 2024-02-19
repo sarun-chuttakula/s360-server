@@ -6,12 +6,13 @@ import express, { Application, Request, Response } from "express";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import cors from "cors";
-
+import "reflect-metadata";
 import bodyParser from "body-parser";
 import Router from "./routes";
 import logger from "./utils/logger.util";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import http, { request } from "http";
+import { ClientToServerEvents, ServerToClientEvents } from "./types/typings";
 // import { generateCreateTableScript } from "./utils/genSQL.util";
 const PORT = process.env.PORT || 4000;
 const app: Application = express();
@@ -19,6 +20,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true,
   },
 }); //this is socket io which is used for real time communication between client and server
 // generateCreateTableScript();
@@ -32,16 +35,22 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup());
 app.use(Router);
 
 //on connection event
-io.on("connection", (socket) => {
-  console.log("a user connected");
-  socket.on("message", (msg) => {
-    console.log(msg);
-    io.emit("message", msg);
-  });
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
-});
+//on connection event
+io.on(
+  "connection",
+  (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
+    socket.on("clientMsg", (data) => {
+      console.log(data);
+      if (data.group_id === "") {
+        io.sockets.emit("serverMsg", data);
+      } else {
+        socket.join(data.group_id);
+        io.to(data.group_id).emit("serverMsg", data);
+      }
+    });
+  }
+);
+
 export { io };
 server.listen(PORT, () => {
   logger.info(`Server is running on port ${PORT}`);

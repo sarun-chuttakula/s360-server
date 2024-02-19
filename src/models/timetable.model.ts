@@ -16,8 +16,8 @@ export class Timetable extends BaseEntityModel {
   @Column({ nullable: false, type: "enum", enum: Day })
   day!: Day;
 
-  @Column({ nullable: false, type: "datetime" })
-  start_time!: Date;
+  @Column({ nullable: true })
+  start_time!: string;
 
   @Column({ nullable: false, type: "datetime" })
   end_time!: Date;
