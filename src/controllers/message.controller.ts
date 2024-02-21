@@ -29,9 +29,10 @@ export default class MessageController {
     @Body() body: ISendMessageRequest
   ): Promise<IResponseDto<ISendMessageResponse>> {
     try {
-      if (!this.req.user)
+      const user = this.req.user || this.req.student;
+      if (!user)
         throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
-      const message = await sendMessage(body, this.req.user);
+      const message = await sendMessage(body, user);
       return new ApiResponse(
         true,
         mask(message, SendMessageResponseFields),

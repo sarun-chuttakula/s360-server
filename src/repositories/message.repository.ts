@@ -1,6 +1,6 @@
 import { INewGroupRequest, INewGroupResponse } from "../dtos";
 import AppDataSource from "../configs/data-source";
-import { Group, GroupMember, User, Message } from "../models";
+import { Group, GroupMember, User, Message, Student } from "../models";
 import { ISendMessageRequest, ISendMessageResponse } from "../dtos/message.dto";
 const groupRepository = AppDataSource.manager.getRepository(Group);
 const groupMemberRepository = AppDataSource.manager.getRepository(GroupMember);
@@ -8,7 +8,7 @@ const userRepository = AppDataSource.manager.getRepository(User);
 const messageRepository = AppDataSource.manager.getRepository(Message);
 export const sendMessage = async (
   payload: ISendMessageRequest,
-  reqUser: User
+  reqUser: User | Student
 ): Promise<ISendMessageResponse> => {
   const group = await groupRepository.findOne({ where: { id: payload.group } });
   if (!group) throw new Error("Group not found");

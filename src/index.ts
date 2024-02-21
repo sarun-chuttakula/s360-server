@@ -13,6 +13,7 @@ import logger from "./utils/logger.util";
 import { Server, Socket } from "socket.io";
 import http, { request } from "http";
 import { ClientToServerEvents, ServerToClientEvents } from "./types/typings";
+import { Group, Message } from "./models";
 // import { generateCreateTableScript } from "./utils/genSQL.util";
 const PORT = process.env.PORT || 4000;
 const app: Application = express();
@@ -36,20 +37,29 @@ app.use(Router);
 
 //on connection event
 //on connection event
-io.on(
-  "connection",
-  (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
-    socket.on("clientMsg", (data) => {
-      console.log(data);
-      if (data.group_id === "") {
-        io.sockets.emit("serverMsg", data);
-      } else {
-        socket.join(data.group_id);
-        io.to(data.group_id).emit("serverMsg", data);
-      }
+io.on("connect", (socket: any) => {
+  socket.on("clientMsg", async (data: any) => {
+    console.log(data);
+    const messageRepository = AppDataSource.manager.getRepository(Message);
+    const groupRepository = AppDataSource.manager.getRepository(Group);
+    const newMessage = new Message();
+    const group = await groupRepository.findOne({ where: { id: data.group } });
+    const sending = await messageRepository.save({
+      ...newMessage,
+      ...data,
+      group: group,
+      created_by: data.sender,
+      updated_by: data.sender,
     });
-  }
-);
+    io.sockets.emit("serverMsg", sending);
+    // if (data.group_id === "") {
+    //   io.sockets.emit("serverMsg", data);
+    // } else {
+    //   socket.join(data.group_id);
+    //   io.to(data.group_id).emit("serverMsg", data);
+    // }
+  });
+});
 
 export { io };
 server.listen(PORT, () => {

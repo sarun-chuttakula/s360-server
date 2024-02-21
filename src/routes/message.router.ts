@@ -7,7 +7,7 @@ import { Role } from "../enums";
 
 const router = Router();
 router.route("/").post(
-  authorizeUser([Role.teacher]),
+  authorizeUser([Role.teacher, Role.student]),
   catchAsync(async (req: Request, res: Response) => {
     const messageController = new MessageController(req);
     const response = await messageController.sendMessage(req.body);
