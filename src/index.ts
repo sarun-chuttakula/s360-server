@@ -13,6 +13,7 @@ import logger from "./utils/logger.util";
 import { Server, Socket } from "socket.io";
 import http, { request } from "http";
 import { ClientToServerEvents, ServerToClientEvents } from "./types/typings";
+import { randomUUID } from "crypto";
 // import { generateCreateTableScript } from "./utils/genSQL.util";
 const PORT = process.env.PORT || 4000;
 const app: Application = express();
@@ -39,8 +40,10 @@ app.use(Router);
 io.on(
   "connection",
   (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
-    socket.on("clientMsg", (data) => {
+    socket.on("clientMsg", (data: any) => {
       console.log(data);
+      data["id"] = randomUUID();
+
       if (data.group_id === "") {
         io.sockets.emit("serverMsg", data);
       } else {
