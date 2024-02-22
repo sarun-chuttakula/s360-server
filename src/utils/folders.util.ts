@@ -1,15 +1,17 @@
-import * as fs from "fs";
-import * as path from "path";
+import fs from "fs";
+import path from "path";
 
 interface Directory {
   name: string;
   parent: string | null;
-  children: Array<Directory | File>;
+  type: "directory";
+  children: (Directory | File)[];
 }
 
 interface File {
   name: string;
   parent: string;
+  type: "file";
   size: number;
 }
 
@@ -17,6 +19,7 @@ export function generate_json(directory: string): Directory {
   const data: Directory = {
     name: getBasename(directory),
     parent: null,
+    type: "directory",
     children: [],
   };
 
@@ -28,22 +31,32 @@ export function generate_json(directory: string): Directory {
     const currentDir: Directory = {
       name: getBasename(directoryPath),
       parent: parentName,
+      type: "directory",
       children: [],
     };
 
-    const files = fs.readdirSync(directoryPath);
+    const items = fs.readdirSync(directoryPath);
 
-    for (const file of files) {
-      const filePath = `${directoryPath}/${file}`;
-      const stats = fs.statSync(filePath);
+    for (const item of items) {
+      const itemPath = `${directoryPath}/${item}`;
+      const stats = fs.statSync(itemPath);
       if (stats.isDirectory()) {
-        traverse(filePath, currentDir.name);
-      } else {
-        currentDir.children.push({
-          name: file,
+        const subDirectory: Directory = {
+          name: item,
           parent: currentDir.name,
+          type: "directory",
+          children: [],
+        };
+        currentDir.children.push(subDirectory);
+        traverse(itemPath, currentDir.name);
+      } else {
+        const file: File = {
+          name: item,
+          parent: currentDir.name,
+          type: "file",
           size: stats.size,
-        });
+        };
+        currentDir.children.push(file);
       }
     }
 
@@ -85,20 +98,3 @@ export function deleteFolder(folderPath: string): void {
     fs.rmdirSync(folderPath);
   }
 }
-
-// Example usage:
-// const directoryPath =
-//   "/Users/ch.sarun/Documents/MyCodes/Code/Projects/S360/s360-server/src/thumbnails";
-// const result = generate_json(directoryPath);
-// console.log(JSON.stringify(result, null, 4));
-
-// // Example usage of additional functions:
-// const newFolderName = "test";
-// createFolder(directoryPath, newFolderName);
-
-// const newFilePath = path.join(directoryPath, newFolderName, "newFile.txt");
-// addFile(newFilePath, "This is a new file.");
-
-// deleteFile(newFilePath);
-
-// deleteFolder(path.join(directoryPath, newFolderName));
