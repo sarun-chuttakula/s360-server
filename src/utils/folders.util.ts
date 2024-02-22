@@ -1,100 +1,48 @@
-import fs from "fs";
-import path from "path";
+import * as fs from "fs";
+import * as path from "path";
 
-interface Directory {
+interface FileNode {
   name: string;
   parent: string | null;
-  type: "directory";
-  children: (Directory | File)[];
+  size?: number;
+  children: FileNode[];
 }
 
-interface File {
-  name: string;
-  parent: string;
-  type: "file";
-  size: number;
-}
-
-export function generate_json(directory: string): Directory {
-  const data: Directory = {
-    name: getBasename(directory),
+export function generate_json(directory: string): FileNode {
+  const data: FileNode = {
+    name: path.basename(directory),
     parent: null,
-    type: "directory",
     children: [],
   };
 
-  function getBasename(path: string): string {
-    return path.split("/").pop()!;
-  }
-
-  function traverse(directoryPath: string, parentName: string | null) {
-    const currentDir: Directory = {
-      name: getBasename(directoryPath),
-      parent: parentName,
-      type: "directory",
-      children: [],
-    };
-
-    const items = fs.readdirSync(directoryPath);
-
-    for (const item of items) {
-      const itemPath = `${directoryPath}/${item}`;
-      const stats = fs.statSync(itemPath);
-      if (stats.isDirectory()) {
-        const subDirectory: Directory = {
-          name: item,
-          parent: currentDir.name,
-          type: "directory",
+  function traverse(rootPath: string, parentNode: FileNode) {
+    const files = fs.readdirSync(rootPath, { withFileTypes: true });
+    files.forEach((file) => {
+      const currentPath = path.join(rootPath, file.name);
+      if (file.isDirectory()) {
+        const directoryNode: FileNode = {
+          name: file.name,
+          parent: parentNode.name,
           children: [],
         };
-        currentDir.children.push(subDirectory);
-        traverse(itemPath, currentDir.name);
-      } else {
-        const file: File = {
-          name: item,
-          parent: currentDir.name,
-          type: "file",
-          size: stats.size,
-        };
-        currentDir.children.push(file);
+        parentNode.children.push(directoryNode);
+        traverse(currentPath, directoryNode);
+      } else if (file.isFile()) {
+        parentNode.children.push({
+          name: file.name,
+          parent: parentNode.name,
+          size: fs.statSync(currentPath).size,
+          children: [],
+        });
       }
-    }
-
-    data.children.push(currentDir);
+    });
   }
 
-  traverse(directory, null);
-
+  traverse(directory, data);
   return data;
 }
 
-export function createFolder(parentPath: string, folderName: string): void {
-  const folderPath = path.join(parentPath, folderName);
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath);
-  }
-}
-
-export function addFile(filePath: string, content: string): void {
-  fs.writeFileSync(filePath, content);
-}
-
-export function deleteFile(filePath: string): void {
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-  }
-}
-
-export function deleteFolder(folderPath: string): void {
-  if (fs.existsSync(folderPath)) {
-    fs.readdirSync(folderPath).forEach((file) => {
-      const currentPath = path.join(folderPath, file);
-      if (fs.lstatSync(currentPath).isDirectory()) {
-        deleteFolder(currentPath);
-      } else {
-        deleteFile(currentPath);
-      }
-    });
-    fs.rmdirSync(folderPath);
-  }
-}
+// Example usage:
+// const directoryPath = "/home/xelpmoc/Documents/Code/OWN/s360-client/src";
+// const result = generateJson(directoryPath);
+// console.log(JSON.stringify(result, null, 4));
