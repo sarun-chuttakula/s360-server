@@ -2,4 +2,4 @@
 *.env
 *.DS_Store
 
-/thumbnails
+/src/thumbnails
