@@ -12,6 +12,7 @@ import { directoryTreeStructure } from "../repositories/library.repository";
 import { generate_json } from "../utils/folders.util";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { fileUpload } from "./file-uploader";
 const router = Router();
 
@@ -22,6 +23,18 @@ router.get(
   catchAsync(async (req: Request, res: Response) => {
     const folderStructure = await generate_json(req.query.path as string);
     res.status(httpStatus.OK).json(folderStructure);
+  })
+);
+
+router.get(
+  "/api/download/",
+  catchAsync(async (req: Request, res: Response) => {
+    const path = req.query.path as string;
+    if (fs.existsSync(path)) {
+      res.download(path);
+    } else {
+      res.status(404).send("File not found");
+    }
   })
 );
 

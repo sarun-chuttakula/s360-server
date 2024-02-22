@@ -1,39 +1,43 @@
 import * as fs from "fs";
 import * as path from "path";
 
-interface FileNode {
+type FileTreeValue = {
+  type: "directory" | "file";
   name: string;
-  parent: string | null;
-  size?: number;
-  children: FileNode[];
-}
+  extra?: string;
+  files?: FileTreeValue[];
+};
 
-export function generate_json(directory: string): FileNode {
-  const data: FileNode = {
+export function generate_json(directory: string): FileTreeValue {
+  const data: FileTreeValue = {
+    type: "directory", // Root node is always a directory
     name: path.basename(directory),
-    parent: null,
-    children: [],
+    files: [], // Ensure files is initialized as an empty array
   };
 
-  function traverse(rootPath: string, parentNode: FileNode) {
+  function traverse(rootPath: string, parentNode: FileTreeValue) {
     const files = fs.readdirSync(rootPath, { withFileTypes: true });
     files.forEach((file) => {
       const currentPath = path.join(rootPath, file.name);
       if (file.isDirectory()) {
-        const directoryNode: FileNode = {
+        const directoryNode: FileTreeValue = {
+          type: "directory",
           name: file.name,
-          parent: parentNode.name,
-          children: [],
+          files: [], // Ensure files is initialized as an empty array
         };
-        parentNode.children.push(directoryNode);
+        if (parentNode.files)
+          // Check if parentNode.files is defined before pushing
+          parentNode.files.push(directoryNode);
         traverse(currentPath, directoryNode);
       } else if (file.isFile()) {
-        parentNode.children.push({
+        const fileNode: FileTreeValue = {
+          type: "file",
           name: file.name,
-          parent: parentNode.name,
-          size: fs.statSync(currentPath).size,
-          children: [],
-        });
+          extra: `Size: ${fs.statSync(currentPath).size}`,
+        };
+        if (parentNode.files)
+          // Check if parentNode.files is defined before pushing
+          parentNode.files.push(fileNode);
       }
     });
   }
@@ -41,8 +45,3 @@ export function generate_json(directory: string): FileNode {
   traverse(directory, data);
   return data;
 }
-
-// Example usage:
-// const directoryPath = "/home/xelpmoc/Documents/Code/OWN/s360-client/src";
-// const result = generateJson(directoryPath);
-// console.log(JSON.stringify(result, null, 4));
