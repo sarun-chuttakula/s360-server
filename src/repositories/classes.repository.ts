@@ -87,7 +87,7 @@ export const getAllStudentsbyClass = async (
 export const getTimetable = async (
   reqUser: User | Student,
   classId: string
-): Promise<Record<string, any[]>> => {
+) => {
   const findClass = await classRepository.findOne({
     where: { id: classId },
   });
@@ -122,24 +122,8 @@ export const getTimetable = async (
     }
 
     // Push schedule entry to the grouped timetable
-    const sortedSchedule: Record<string, string> = {}; // Explicit type annotation
-    Object.keys(entry.schedule)
-      .sort()
-      .forEach((period) => {
-        sortedSchedule[period] = entry.schedule[period];
-      });
-    groupedTimetable[day].push(sortedSchedule);
+    groupedTimetable[day].push(entry.schedule);
   });
 
-  // Sort the timetable entries by day in the order from Monday to Friday
-  const orderedTimetable: Record<string, any[]> = {};
-  Object.keys(days).forEach((dayKey) => {
-    const day: Day = dayKey as Day; // Explicitly cast dayKey to Day enum
-    const dayName = days[day];
-    if (groupedTimetable[dayName]) {
-      orderedTimetable[dayName] = groupedTimetable[dayName];
-    }
-  });
-
-  return orderedTimetable;
+  return groupedTimetable;
 };

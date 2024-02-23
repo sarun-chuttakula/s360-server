@@ -2,6 +2,7 @@ import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Classes } from "./class.model";
 import { BaseEntityModel } from "./base.model";
 import { Day } from "../enums/day.enums";
+import { User } from "./user.model";
 
 @Entity("timetable")
 export class Timetable extends BaseEntityModel {
@@ -13,5 +14,5 @@ export class Timetable extends BaseEntityModel {
   day!: Day;
 
   @Column({ type: "json", nullable: false })
-  schedule!: Record<string, string>;
+  schedule!: Record<string, { subject: string; teacher: User }>; // Modify the type of schedule property
 }
