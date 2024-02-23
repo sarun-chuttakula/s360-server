@@ -7,7 +7,6 @@ const router = Router();
 
 router.route("/register").post(
   catchAsync(async (req: Request, res: Response) => {
-    console.log(req)
     const authController = new AuthController(req);
     const response = await authController.registerUser(req.body);
     res.status(httpStatus.CREATED).json(response);

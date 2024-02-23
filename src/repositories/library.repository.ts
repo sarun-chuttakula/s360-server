@@ -1,10 +1,11 @@
 import fs from "fs";
 import path from "path";
 
-const THUMBNAILS_DIRECTORY = "../";
+const THUMBNAILS_DIRECTORY = "./src/thumbnails"; //!use src/thumbnails
 
 export const createFolder = async (folderName: string) => {
   const fullPath = path.join(THUMBNAILS_DIRECTORY, folderName);
+  console.log(fullPath);
   try {
     await fs.promises.mkdir(fullPath);
     console.log(`Folder '${fullPath}' created successfully.`);
