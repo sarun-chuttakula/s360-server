@@ -87,7 +87,7 @@ export const getAllStudentsbyClass = async (
 export const getTimetable = async (
   reqUser: User | Student,
   classId: string
-) => {
+): Promise<Record<string, any[]>> => {
   const findClass = await classRepository.findOne({
     where: { id: classId },
   });
@@ -95,8 +95,8 @@ export const getTimetable = async (
   if (!findClass) throw new Error("Class not found");
 
   const timetable = await timetableRepository.find({
-    where: { class: { id: classId }, is_active: true, is_deleted: false }, // Filter timetables by classId
-    relations: ["class"],
+    where: { class: { id: classId }, is_active: true, is_deleted: false },
+    relations: ["class"], // Include the "class" relation
   });
 
   if (!timetable || timetable.length === 0)
@@ -108,21 +108,28 @@ export const getTimetable = async (
     [Day.WEDNESDAY]: "Wednesday",
     [Day.THURSDAY]: "Thursday",
     [Day.FRIDAY]: "Friday",
-    // [Day.SATURDAY]: "Saturday",
-    // [Day.SUNDAY]: "Sunday",
   };
 
-  // Initialize an object to store timetable entries grouped by day
-  const groupedTimetable: Record<string, any[]> = {};
+  const groupedTimetable: Record<string, any[]> = {
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+  };
 
-  timetable.forEach((entry) => {
+  timetable.forEach((entry: Timetable) => {
     const day = days[entry.day];
-    if (!groupedTimetable[day]) {
-      groupedTimetable[day] = [];
-    }
-
-    // Push schedule entry to the grouped timetable
-    groupedTimetable[day].push(entry.schedule);
+    const sortedSchedule: any[] = [];
+    Object.keys(entry.schedule).forEach((period: any) => {
+      sortedSchedule.push({
+        period,
+        subject: entry.schedule[period].subject,
+        teacher_id: entry.schedule[period].teacher_id,
+        teacher_name: entry.schedule[period].teacher_name,
+      });
+    });
+    groupedTimetable[day] = sortedSchedule;
   });
 
   return groupedTimetable;
