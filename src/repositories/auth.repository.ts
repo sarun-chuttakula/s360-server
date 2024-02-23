@@ -22,7 +22,7 @@ import { Classes } from "../models/class.model";
 import { BatchFolder } from "../models/batch-folder.model";
 import { createFolder } from "./library.repository";
 const classRepository = AppDataSource.manager.getRepository(Classes);
-const batchRepository = AppDataSource.manager.getRepository(BatchFolder);
+
 export const register = async (payload: IUserRegisterRequest): Promise<any> => {
   // console.log(payload, "payload");
   const lowercaseUsername = payload.username.toLowerCase();
@@ -35,23 +35,7 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
     if (existingStudent) {
       throw new AlreadyExistsError("Student already exists");
     }
-    const currentYear = new Date().getFullYear();
-    // const batchEnd = currentYear + 4;
-    let batch = await batchRepository.findOne({
-      where: {
-        batch: `${currentYear}`,
-      },
-    });
-    if (!batch) {
-      await createFolder(`${currentYear}`);
-      batch = await batchRepository.save({
-        ...new BatchFolder(),
-        batch: `${currentYear}`,
-        folder: `${process.env.FOLDER_PATH}/${currentYear}`,
-        created_by: "ADMIN",
-        updated_by: "ADMIN",
-      });
-    }
+
     const hashedPassword = await generateHash(payload.password);
     const myclass = await classRepository.findOne({
       where: { name: payload.class },
@@ -67,7 +51,7 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
       ht_no: lowercaseUsername,
       password: hashedPassword,
       class: myclass,
-      batchfolder: batch,
+      // batchfolder: batch,
     });
     const tokenUuid = randomUUID();
     const refreshToken = generateToken(

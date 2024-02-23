@@ -38,20 +38,35 @@ export const deleteFolder = async (folderName: string) => {
   }
 };
 
-export const uploadFile = async (
-  folderName: string,
-  fileName: string,
-  fileContent: string
-) => {
-  const fullPath = path.join(THUMBNAILS_DIRECTORY, folderName, fileName);
-  try {
-    await fs.promises.writeFile(fullPath, fileContent);
-    console.log(`File '${fullPath}' uploaded successfully.`);
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    throw error;
-  }
-};
+export async function uploadFile(
+  folderPath: string,
+  filePath: string,
+  fileContent: Buffer
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Create directory if it doesn't exist
+    fs.mkdir(folderPath, { recursive: true }, (err) => {
+      if (err) {
+        console.error("Error creating directory:", err);
+        return reject(err);
+      }
+
+      // Write the file content to the specified path
+      fs.writeFile(filePath, fileContent, (err) => {
+        if (err) {
+          console.error("Error writing file:", err);
+          return reject(err);
+        }
+        console.log(
+          `File '${path.basename(
+            filePath
+          )}' uploaded successfully to '${folderPath}'`
+        );
+        resolve();
+      });
+    });
+  });
+}
 
 export const downloadFile = async (folderName: string, fileName: string) => {
   const fullPath = path.join(THUMBNAILS_DIRECTORY, folderName, fileName);

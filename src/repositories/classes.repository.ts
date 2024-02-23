@@ -2,9 +2,11 @@ import AppDataSource from "../configs/data-source";
 import { IClassesRequest } from "../dtos";
 import { Day } from "../enums/day.enums";
 import { Student, User } from "../models";
+import { BatchFolder } from "../models/batch-folder.model";
 import { Classes } from "../models/class.model";
 import { Timetable } from "../models/timetable.model";
-
+import { createFolder } from "./library.repository";
+const batchRepository = AppDataSource.manager.getRepository(BatchFolder);
 const classRepository = AppDataSource.manager.getRepository(Classes);
 const studentRepository = AppDataSource.manager.getRepository(Student);
 const userRepository = AppDataSource.manager.getRepository(User);
@@ -14,10 +16,28 @@ export const createClass = async (payload: IClassesRequest, reqUser: User) => {
     where: { name: payload.name },
   });
   if (findclass) throw new Error("class already exists");
+  const currentYear = new Date().getFullYear();
+  // const batchEnd = currentYear + 4;
+  let batch = await batchRepository.findOne({
+    where: {
+      batch: `${currentYear}`,
+    },
+  });
+  if (!batch) {
+    await createFolder(`${currentYear}`);
+    batch = await batchRepository.save({
+      ...new BatchFolder(),
+      batch: `${currentYear}`,
+      folder: `${process.env.FOLDER_PATH}/${currentYear}`,
+      created_by: "ADMIN",
+      updated_by: "ADMIN",
+    });
+  }
   const newclass = new Classes();
   return await classRepository.save({
     ...newclass,
     ...payload,
+    batchfolder: batch,
     created_by: reqUser.id,
     updated_by: reqUser.id,
   });
@@ -67,7 +87,7 @@ export const getAllStudentsbyClass = async (
 export const getTimetable = async (
   reqUser: User | Student,
   classId: string
-) => {
+): Promise<Record<string, any[]>> => {
   const findClass = await classRepository.findOne({
     where: { id: classId },
   });
@@ -75,7 +95,7 @@ export const getTimetable = async (
   if (!findClass) throw new Error("Class not found");
 
   const timetable = await timetableRepository.find({
-    where: { is_active: true, is_deleted: false },
+    where: { class: { id: classId }, is_active: true, is_deleted: false }, // Filter timetables by classId
     relations: ["class"],
   });
 
@@ -88,8 +108,8 @@ export const getTimetable = async (
     [Day.WEDNESDAY]: "Wednesday",
     [Day.THURSDAY]: "Thursday",
     [Day.FRIDAY]: "Friday",
-    [Day.SATURDAY]: "Saturday",
-    [Day.SUNDAY]: "Sunday",
+    // [Day.SATURDAY]: "Saturday",
+    // [Day.SUNDAY]: "Sunday",
   };
 
   // Initialize an object to store timetable entries grouped by day
@@ -101,12 +121,25 @@ export const getTimetable = async (
       groupedTimetable[day] = [];
     }
 
-    groupedTimetable[day].push({
-      start_time: entry.start_time,
-      end_time: entry.end_time,
-      subject: entry.subject,
-    });
+    // Push schedule entry to the grouped timetable
+    const sortedSchedule: Record<string, string> = {}; // Explicit type annotation
+    Object.keys(entry.schedule)
+      .sort()
+      .forEach((period) => {
+        sortedSchedule[period] = entry.schedule[period];
+      });
+    groupedTimetable[day].push(sortedSchedule);
   });
 
-  return groupedTimetable;
+  // Sort the timetable entries by day in the order from Monday to Friday
+  const orderedTimetable: Record<string, any[]> = {};
+  Object.keys(days).forEach((dayKey) => {
+    const day: Day = dayKey as Day; // Explicitly cast dayKey to Day enum
+    const dayName = days[day];
+    if (groupedTimetable[dayName]) {
+      orderedTimetable[dayName] = groupedTimetable[dayName];
+    }
+  });
+
+  return orderedTimetable;
 };

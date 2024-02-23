@@ -1,5 +1,13 @@
-import { Entity, Column, OneToMany, Check } from "typeorm";
+import {
+  Entity,
+  Column,
+  OneToMany,
+  Check,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
 import { BaseEntityModel } from "./base.model";
+import { BatchFolder } from "./batch-folder.model";
 @Entity("classes")
 @Check(`"is_deleted" = false`)
 export class Classes extends BaseEntityModel {
@@ -8,4 +16,10 @@ export class Classes extends BaseEntityModel {
 
   @Column({ nullable: true })
   year!: number;
+
+  @ManyToOne(() => BatchFolder, (batchfolder) => batchfolder.id, {
+    nullable: false,
+  })
+  @JoinColumn({ name: "batch" })
+  batchfolder!: BatchFolder;
 }

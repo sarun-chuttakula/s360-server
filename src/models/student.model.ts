@@ -44,10 +44,4 @@ export class Student extends BaseUser {
   @ManyToOne(() => Classes, (classes) => classes.id, { nullable: false })
   @JoinColumn({ name: "class" })
   class!: Classes;
-
-  @ManyToOne(() => BatchFolder, (batchfolder) => batchfolder.id, {
-    nullable: false,
-  })
-  @JoinColumn({ name: "batch" })
-  batchfolder!: BatchFolder;
 }

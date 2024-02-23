@@ -8,12 +8,16 @@ import {
 } from "../utils";
 import httpStatus from "http-status";
 import { Role } from "../enums";
-import { directoryTreeStructure } from "../repositories/library.repository";
+import {
+  directoryTreeStructure,
+  uploadFile,
+} from "../repositories/library.repository";
 import { generate_json } from "../utils/folders.util";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileUpload } from "./file-uploader";
+const upload = multer();
 const router = Router();
 
 // Route to upload a file to Google Drive
@@ -53,25 +57,28 @@ router.get(
 // );
 
 // Route to upload a file to Google Drive
-// router.post("/uploadfile", async (req: Request, res: Response) => {
-//   const upload = fileUpload.single("file");
-//   upload(req, res, async (err: any) => {
-//     if (err) {
-//       return res.status(400).json({ error: "File upload failed" });
-//     }
-//     if (!req.file) {
-//       return res.status(400).json({ error: "File upload failed" });
-//     }
-//     const uploadPath = req.body.path || "/default/upload/directory";
-//     const filePath = path.join(uploadPath, req.file.filename);
-//     const content = req.file.buffer.toString(); // Assuming the file content is text, adjust if it's binary
-//     try {
-//       await addFile(filePath, content);
-//       res.status(200).json({ message: "File uploaded successfully" });
-//     } catch (error) {
-//       res.status(500).json({ error: "Internal server error" });
-//     }
-//   });
-// });
+const THUMBNAILS_DIRECTORY = "./src/thumbnails";
+router.post(
+  "/uploadfile",
+  upload.single("file"),
+  async (req: Request, res: Response) => {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file provided" });
+    }
+    const folderName: string = req.body.path || "/default/upload/directory";
+    const fileName: string = req.file.originalname;
+    const folderPath: string = path.join(THUMBNAILS_DIRECTORY, folderName);
+    const filePath: string = path.join(folderPath, fileName);
+    const fileContent: Buffer = req.file.buffer; // Assuming the file content is in buffer form
+
+    try {
+      await uploadFile(folderPath, filePath, fileContent);
+      res.status(200).json({ message: "File uploaded successfully" });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
 
 export default router;
