@@ -41,6 +41,9 @@ export class Student extends BaseUser {
   @Column({ nullable: true, default: null })
   profile_pic!: string;
 
+  @Column({ nullable: false })
+  batch!: string;
+
   @ManyToOne(() => Classes, (classes) => classes.id, { nullable: false })
   @JoinColumn({ name: "class" })
   class!: Classes;

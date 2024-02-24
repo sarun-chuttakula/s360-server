@@ -12,6 +12,7 @@ export interface IUserRegisterRequest {
   profile_pic: string;
   role: Role;
   class?: string;
+  batch?: string;
 }
 
 export const UserRegisterResponseFields = {
@@ -26,6 +27,7 @@ export const UserRegisterResponseFields = {
   profile_pic: undefined,
   email: undefined,
   phone: undefined,
+  batch: undefined,
   accesstoken: undefined,
   refreshtoken: undefined,
 };
@@ -42,20 +44,22 @@ export interface IUserRegisterResponse {
   profile_pic: string;
   email: string;
   phone: string;
+  batch?: string;
 }
 
 export interface IUserUpdateRequest {
-  firstname: string;
-  lastname: string;
-  role: string;
-  dob: string;
-  gender: string;
-  username: string;
-  password: string;
-  lastlogin: Date;
-  profile_pic: string;
-  email: string;
-  phone: string;
+  firstname?: string;
+  lastname?: string;
+  role?: string;
+  dob?: string;
+  gender?: string;
+  username?: string;
+  password?: string;
+  lastlogin?: Date;
+  profile_pic?: string;
+  email?: string;
+  phone?: string;
+  batch?: string;
 }
 
 export const UserUpdateResponseFields = {

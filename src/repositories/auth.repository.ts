@@ -41,6 +41,7 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
       where: { name: payload.class },
     });
     if (!myclass) throw new NotFoundException("Class not found");
+    const batch = payload.batch || new Date().getFullYear();
     const newStudent = await studentRepository.save({
       ...new Student(),
       ...payload,
@@ -51,6 +52,7 @@ export const register = async (payload: IUserRegisterRequest): Promise<any> => {
       ht_no: lowercaseUsername,
       password: hashedPassword,
       class: myclass,
+      batch: `${batch}`,
       // batchfolder: batch,
     });
     const tokenUuid = randomUUID();
