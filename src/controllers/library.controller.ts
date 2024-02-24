@@ -42,8 +42,8 @@ export default class LibraryController {
       if (!(this.req.user || this.req.student))
         throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
       const fullpath = this.req.user
-        ? `/Users/ch.sarun/Documents/MyCodes/Code/Projects/S360/s360-server/src/thumbnails/`
-        : `/Users/ch.sarun/Documents/MyCodes/Code/Projects/S360/s360-server/src/thumbnails/${path}`;
+        ? `${process.env.FOLDER_PATH}`
+        : `${process.env.FOLDER_PATH}/thumbnails/${path}`;
       const folderStructure = await generate_json(fullpath);
       return new ApiResponse(
         true,
@@ -66,8 +66,8 @@ export default class LibraryController {
         throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
 
       const fullPath = this.req.user
-        ? `/Users/ch.sarun/Documents/MyCodes/Code/Projects/S360/s360-server/src/${filePath}`
-        : `/Users/ch.sarun/Documents/MyCodes/Code/Projects/S360/s360-server/src/thumbnails/${filePath}`;
+        ? `${process.env.FOLDER_PATH}${filePath}`
+        : `${process.env.FOLDER_PATH}/thumbnails/${filePath}`;
       console.log(fullPath);
       if (fs.existsSync(fullPath)) {
         res.download(fullPath);
