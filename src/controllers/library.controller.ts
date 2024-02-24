@@ -42,7 +42,7 @@ export default class LibraryController {
       if (!(this.req.user || this.req.student))
         throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
       const fullpath = this.req.user
-        ? `${process.env.FOLDER_PATH}`
+        ? `${process.env.FOLDER_PATH}/thumbnails`
         : `${process.env.FOLDER_PATH}/thumbnails/${path}`;
       const folderStructure = await generate_json(fullpath);
       return new ApiResponse(

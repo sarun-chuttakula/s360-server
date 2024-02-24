@@ -156,6 +156,7 @@ export const login = async (payload: IUserRegisterRequest): Promise<any> => {
     where: {
       ht_no: lowercaseUsername,
     },
+    relations: ["class"],
   });
   if (existingStudent) {
     if (!(await compareHash(payload.password, existingStudent.password))) {
@@ -190,6 +191,7 @@ export const login = async (payload: IUserRegisterRequest): Promise<any> => {
     existingStudent.password = "";
     return {
       ...existingStudent,
+      class: existingStudent.class.id,
       accesstoken: accessToken,
       refreshtoken: refreshToken,
     };

@@ -27,6 +27,7 @@ export const UserRegisterResponseFields = {
   profile_pic: undefined,
   email: undefined,
   phone: undefined,
+  class: undefined,
   batch: undefined,
   accesstoken: undefined,
   refreshtoken: undefined,
@@ -44,6 +45,7 @@ export interface IUserRegisterResponse {
   profile_pic: string;
   email: string;
   phone: string;
+  class?: string;
   batch?: string;
 }
 
