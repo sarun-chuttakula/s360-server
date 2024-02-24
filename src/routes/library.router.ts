@@ -17,28 +17,32 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileUpload } from "./file-uploader";
+import LibraryController from "../controllers/library.controller";
 const upload = multer();
 const router = Router();
 
 // Route to upload a file to Google Drive
 router.get(
   "/getdirectories",
-  // authorizeUser([Role.teacher, Role.student]),
+  authorizeUser([Role.teacher, Role.student]),
   catchAsync(async (req: Request, res: Response) => {
-    const folderStructure = await generate_json(req.query.path as string);
+    const libraryController = new LibraryController(req);
+    const folderStructure = await libraryController.getDirectories(
+      req.query.path as string
+    );
     res.status(httpStatus.OK).json(folderStructure);
   })
 );
 
 router.get(
   "/api/download/",
+  authorizeUser([Role.teacher, Role.student]),
   catchAsync(async (req: Request, res: Response) => {
     const path = req.query.path as string;
-    if (fs.existsSync(path)) {
-      res.download(path);
-    } else {
-      res.status(404).send("File not found");
-    }
+    // const fullpath = `/Users/ch.sarun/Documents/MyCodes/Code/Projects/S360/s360-server/src/${path}`;
+    const libraryController = new LibraryController(req);
+    const response = await libraryController.downloadFile(path, res);
+    res.status(httpStatus.OK).json(response);
   })
 );
 

@@ -115,7 +115,6 @@ export default class ClassesController {
       if (!user)
         throw new UnauthorizedException(ERROR_MESSAGE.USER_NOT_AUTHORIZED);
       const classes = await getTimetable(user, classId as string);
-      console.log(classes);
 
       return new ApiResponse(true, classes, RESPONSE_MESSAGE.CLASSES_GET);
     } catch (error: any) {

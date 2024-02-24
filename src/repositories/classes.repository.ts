@@ -96,7 +96,7 @@ export const getTimetable = async (
 
   const timetable = await timetableRepository.find({
     where: { class: { id: classId }, is_active: true, is_deleted: false },
-    relations: ["class"], // Include the "class" relation
+    relations: ["class"],
   });
 
   if (!timetable || timetable.length === 0)

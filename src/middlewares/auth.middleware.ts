@@ -58,8 +58,6 @@ export const validateToken = async (
         .findOne({ where: { id: tokenResult.payload.id } });
       if (user) return user;
     }
-    console.log("tokenResult.payload.role", tokenResult.payload.role);
-    console.log(tokenResult.payload.role == Role.student);
     if (tokenResult.payload.role === Role.student) {
       user = await AppDataSource.manager
         .getRepository(Student)
