@@ -29,9 +29,10 @@ export const getFeeDetails = async (reqUser: User | Student, id?: string) => {
     });
     if (!student) throw new Error("student not found");
     const feedetails = await feeDetailsRepository.find({
-      where: { is_active: true, is_deleted: false, student: student },
+      where: { is_active: true, is_deleted: false },
       relations: ["student"],
     });
+    console.log(feedetails, "feedetails");
     if (!feedetails) throw new Error("feedetails not found");
     feedetails.forEach((feedetail) => {
       feedetail.student.ht_no = student.ht_no;

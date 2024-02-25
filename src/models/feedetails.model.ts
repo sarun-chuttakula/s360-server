@@ -20,7 +20,7 @@ export class FeeDetails extends BaseEntityModel {
   @Column({ name: "is_paid" })
   is_paid!: boolean;
 
-  @ManyToOne(() => Student, (student) => student.ht_no)
+  @ManyToOne(() => Student, (student) => student.ht_no, { nullable: false })
   @JoinColumn({ name: "ht_no" })
   student!: Student;
 }
