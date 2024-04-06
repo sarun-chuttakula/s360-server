@@ -14,7 +14,6 @@ import { Server, Socket } from "socket.io";
 import http, { request } from "http";
 import { ClientToServerEvents, ServerToClientEvents } from "./types/typings";
 import { Group, Message } from "./models";
-// import { generateCreateTableScript } from "./utils/genSQL.util";
 const PORT = process.env.PORT || 4000;
 const app: Application = express();
 const server = http.createServer(app);
@@ -24,8 +23,7 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
     credentials: true,
   },
-}); //this is socket io which is used for real time communication between client and server
-// generateCreateTableScript();
+});
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
@@ -35,7 +33,6 @@ app.use(express.static("public"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup());
 app.use(Router);
 
-//on connection event
 //on connection event
 io.on("connect", (socket: any) => {
   socket.on("clientMsg", async (data: any) => {
@@ -52,12 +49,6 @@ io.on("connect", (socket: any) => {
       updated_by: data.sender,
     });
     io.sockets.emit("serverMsg", sending);
-    // if (data.group_id === "") {
-    //   io.sockets.emit("serverMsg", data);
-    // } else {
-    //   socket.join(data.group_id);
-    //   io.to(data.group_id).emit("serverMsg", data);
-    // }
   });
 });
 
